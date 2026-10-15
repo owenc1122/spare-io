@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- Spare original glyph: volume (speaker). Same outline style as our app icons. -->
+  <polyline points="12.0,24.0 20.0,24.0 30.0,15.0 30.0,45.0 20.0,36.0 12.0,36.0 12.0,24.0" fill="none" stroke="#3cff5a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="35.7,24.3 36.5,25.3 37.1,26.4 37.6,27.5 37.9,28.7 38.0,30.0 37.9,31.3 37.6,32.5 37.1,33.6 36.5,34.7 35.7,35.7" fill="none" stroke="#3cff5a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="39.6,18.5 41.5,20.4 43.0,22.5 44.1,24.9 44.8,27.4 45.0,30.0 44.8,32.6 44.1,35.1 43.0,37.5 41.5,39.6 39.6,41.5" fill="none" stroke="#3cff5a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

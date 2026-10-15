@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- Spare original glyph: exit (close X). Same outline style as our app icons. -->
+  <line x1="17.0" y1="17.0" x2="43.0" y2="43.0" stroke="#3cff5a" stroke-width="4.2" stroke-linecap="round"/>
+  <line x1="43.0" y1="17.0" x2="17.0" y2="43.0" stroke="#3cff5a" stroke-width="4.2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,23 @@
+Spare io — launcher UI
+Copyright (c) 2026 Technologie Spare inc. Licensed under the PolyForm Noncommercial
+License 1.0.0 (see LICENSE). Spare and Spare io are trademarks of Technologie
+Spare inc. (see TRADEMARKS.md).
+
+This repository contains only Spare's original launcher UI code. It does NOT
+contain any RayNeo firmware, RayNeo application code, images or fonts, and it
+does not contain the Spare io device runtime, phone link, firmware tooling or
+glasses apps, which are proprietary.
+
+RayNeo is a trademark of its respective owner. This project is unofficial and
+is not affiliated with, endorsed by or sponsored by RayNeo.
+
+Third-party software used
+-------------------------
+
+LVGL - Light and Versatile Graphics Library
+  https://lvgl.io  -  MIT License, Copyright (c) 2021 LVGL Kft
+  The host preview clones LVGL v9.2 at build time into build/. No LVGL source
+  is redistributed here.
+
+Noto Sans SC (SIL Open Font License 1.1), supplied by you at build time for
+the preview renders. Not redistributed here.

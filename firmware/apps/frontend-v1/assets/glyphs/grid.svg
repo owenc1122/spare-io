@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- Spare original glyph: control center (2x2 grid). Same outline style as our app icons. -->
+  <rect x="15" y="15" width="13" height="13" rx="4" fill="none" stroke="#3cff5a" stroke-width="3.4"/>
+  <rect x="15" y="32" width="13" height="13" rx="4" fill="none" stroke="#3cff5a" stroke-width="3.4"/>
+  <rect x="32" y="15" width="13" height="13" rx="4" fill="none" stroke="#3cff5a" stroke-width="3.4"/>
+  <rect x="32" y="32" width="13" height="13" rx="4" fill="none" stroke="#3cff5a" stroke-width="3.4"/>
+</svg>

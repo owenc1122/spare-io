@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an app, interaction or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation on the glasses or phone, not just the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed behaviour
+      description: How would it work with the crown (rotate / click / long-press) and the 540 × 220 screen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: cleanroom
+    attributes:
+      label: Clean-room
+      options:
+        - label: This idea does not require copying vendor code, assets or code from other modding projects.
+          required: true

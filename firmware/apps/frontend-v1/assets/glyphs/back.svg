@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- Spare original glyph: back chevron. Same outline style as our app icons. -->
+  <polyline points="36.0,13.0 21.0,30.0 36.0,47.0" fill="none" stroke="#3cff5a" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

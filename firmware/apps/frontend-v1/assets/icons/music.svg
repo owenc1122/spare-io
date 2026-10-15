@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- 音乐 (music): two beamed note heads. -->
+  <circle cx="18" cy="44" r="6.5" fill="none" stroke="#3cff5a" stroke-width="3.2"/>
+  <circle cx="42" cy="39" r="6.5" fill="none" stroke="#3cff5a" stroke-width="3.2"/>
+  <line x1="24.5" y1="44" x2="24.5" y2="15" stroke="#3cff5a" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="48.5" y1="39" x2="48.5" y2="10" stroke="#3cff5a" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="24.5" y1="15" x2="48.5" y2="10" stroke="#3cff5a" stroke-width="3.6" stroke-linecap="round"/>
+</svg>

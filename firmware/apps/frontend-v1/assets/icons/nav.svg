@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- Spare original app icon: 导航 (navigation). Stock-style single-colour
+       outline, rounded caps/joins, with a 4-point sparkle accent. -->
+  <polygon points="30,8 46,50 30,41 14,50" fill="none" stroke="#3cff5a" stroke-width="3.2" stroke-linejoin="round"/>
+  <line x1="30" y1="41" x2="30" y2="23" stroke="#3cff5a" stroke-width="3.2" stroke-linecap="round"/>
+  <polyline points="49,13 51,18 56,20 51,22 49,27 47,22 42,20 47,18 49,13" fill="#3cff5a" stroke="none"/>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- 番茄钟 (pomodoro timer): clock dial with hands + leaf stem + sparkle. -->
+  <circle cx="30" cy="34" r="20" fill="none" stroke="#3cff5a" stroke-width="3.2"/>
+  <polyline points="30,34 30,22" fill="none" stroke="#3cff5a" stroke-width="3.2" stroke-linecap="round"/>
+  <polyline points="30,34 39,38" fill="none" stroke="#3cff5a" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="24" y1="11" x2="36" y2="11" stroke="#3cff5a" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="30" y1="11" x2="30" y2="15" stroke="#3cff5a" stroke-width="3.2" stroke-linecap="round"/>
+  <polyline points="50,16 51.6,20 55.5,21.6 51.6,23.2 50,27 48.4,23.2 44.5,21.6 48.4,20 50,16" fill="#3cff5a" stroke="none"/>
+</svg>

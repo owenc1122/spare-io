@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <!-- Spare original glyph: bluetooth rune. Same outline style as our app icons. -->
+  <polyline points="21.0,21.0 39.0,38.0 30.0,46.0 30.0,14.0 39.0,22.0 21.0,39.0" fill="none" stroke="#3cff5a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

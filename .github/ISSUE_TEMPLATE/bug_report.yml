@@ -1,0 +1,55 @@
+name: Bug report
+description: Something is broken in the glasses modules, tools or the iPhone app
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please do **not** attach vendor firmware, extracted binaries, keys or photos showing vendor branding.
+        Security problems go through private reporting, see SECURITY.md.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Launcher / control center, Music, Navigation, AI assistant, Firmware tools / build, iPhone app, Docs, Other]
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it happen?
+      options: [Host tests / preview, iOS Simulator, iPhone + real glasses]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. make -C firmware/apps/frontend-v1 test\n2. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Commit hash, macOS / Xcode / iOS versions, glasses firmware version if on device.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or renders
+      render: text
+  - type: checkboxes
+    id: check
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: This report contains no vendor binaries, keys or personal data.
+          required: true

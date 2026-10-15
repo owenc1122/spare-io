@@ -1,0 +1,173 @@
+#!/usr/bin/env python3
+"""Generate firmware L8 icon data from the committed original SVG app icons.
+
+The SVGs in this directory are our OWN vector art, drawn in the stock RayNeo
+style (single-colour green outline, rounded caps/joins, sparkle accents) for the
+Spare launcher's own apps. This script rasterizes the restricted SVG subset we
+author (line / polyline / polygon / circle / rect) to a packed L8 grayscale
+bitmap at the grid icon size and emits a C header of static arrays, which the
+runtime registers via SG_ICON_L8 (sg_app_registry.h). No vendor assets involved.
+
+We deliberately use only primitives Pillow can draw directly (supersampled for
+AA, matching the visual prototype), so there is no external SVG dependency.
+
+Usage: python3 gen_icons.py [--box 30] [--out sg_app_icons.h]
+Requires Pillow (system python3 has it).
+"""
+import argparse, glob, os, re, sys
+from PIL import Image, ImageDraw
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SS = 8  # supersample
+
+def attrs(tag):
+    return dict(re.findall(r'([\w:-]+)\s*=\s*"([^"]*)"', tag))
+
+def num(s):
+    return float(s)
+
+def pts(s):
+    xs = [float(v) for v in re.split(r'[\s,]+', s.strip()) if v != ""]
+    return list(zip(xs[0::2], xs[1::2]))
+
+def render(svg_text, box, view=None, stroke_mul=1.0):
+    vb = re.search(r'viewBox\s*=\s*"([^"]+)"', svg_text)
+    x0, y0, vw, vh = [float(v) for v in re.split(r'[\s,]+', vb.group(1))]
+    if view:
+        x0, y0, vw, vh = view
+    scale = box * SS / vw
+    def X(x): return (x - x0) * scale
+    def Y(y): return (y - y0) * scale
+    def W(w): return max(1, int(round(w * scale)))
+    im = Image.new("L", (int(box * SS), int(box * SS)), 0)
+    d = ImageDraw.Draw(im)
+    def stroke_line(pointlist, w, closed=False):
+        p = [(X(px), Y(py)) for px, py in pointlist]
+        if closed:
+            p = p + [p[0]]
+        d.line(p, fill=255, width=W(w), joint="curve")
+        r = W(w) / 2.0
+        for px, py in p:   # round caps/joins
+            d.ellipse([px - r, py - r, px + r, py + r], fill=255)
+    for m in re.finditer(r'<(line|polyline|polygon|circle|rect)\b[^>]*>', svg_text):
+        tag = m.group(0)
+        a = attrs(tag)
+        name = m.group(1)
+        sw = num(a.get("stroke-width", "2")) * stroke_mul
+        filled = a.get("fill", "none") not in ("none", "", None)
+        if name == "line":
+            stroke_line([(num(a["x1"]), num(a["y1"])), (num(a["x2"]), num(a["y2"]))], sw)
+        elif name == "polyline":
+            stroke_line(pts(a["points"]), sw)
+        elif name == "polygon":
+            P = [(X(px), Y(py)) for px, py in pts(a["points"])]
+            if filled:
+                d.polygon(P, fill=255)
+            else:
+                stroke_line(pts(a["points"]), sw, closed=True)
+        elif name == "circle":
+            cx, cy, rr = num(a["cx"]), num(a["cy"]), num(a["r"])
+            bb = [X(cx - rr), Y(cy - rr), X(cx + rr), Y(cy + rr)]
+            if filled:
+                d.ellipse(bb, fill=255)
+            else:
+                d.ellipse(bb, outline=255, width=W(sw))
+        elif name == "rect":
+            rx = num(a.get("rx", "0"))
+            bb = [X(num(a["x"])), Y(num(a["y"])),
+                  X(num(a["x"]) + num(a["width"])), Y(num(a["y"]) + num(a["height"]))]
+            if filled:
+                d.rounded_rectangle(bb, radius=W(rx), fill=255)
+            else:
+                d.rounded_rectangle(bb, radius=W(rx), outline=255, width=W(sw))
+    return im.resize((box, box), Image.LANCZOS)
+
+# Glyph sizes used by fe_pages (name -> list of px boxes).
+GLYPHS = {"sun": [28], "speaker": [28], "raise": [34], "moon": [34], "bluetooth": [34],
+          "battery": [24], "back": [28, 36], "forward": [28], "grid": [36], "close": [36]}
+GLYPH_FILL = 0.85        # ink extent / box
+GLYPH_STROKE_PX = 2.4    # absolute stroke on the panel, same weight as the 44px app icons
+
+def fit_render(svg, px):
+    """Crop to the ink bounds, scale so the ink fills GLYPH_FILL of the box, and
+    keep the absolute stroke at ~GLYPH_STROKE_PX regardless of the zoom."""
+    probe = render(svg, 240)
+    bb = probe.point(lambda v: 255 if v > 24 else 0).getbbox()
+    vb = re.search(r'viewBox\s*=\s*"([^"]+)"', svg)
+    x0, y0, vw, vh = [float(v) for v in re.split(r'[\s,]+', vb.group(1))]
+    if not bb:
+        return render(svg, px)
+    s = vw / 240.0
+    ix0, iy0, ix1, iy1 = x0 + bb[0] * s, y0 + bb[1] * s, x0 + bb[2] * s, y0 + bb[3] * s
+    side = max(ix1 - ix0, iy1 - iy0) / GLYPH_FILL
+    cx, cy = (ix0 + ix1) / 2, (iy0 + iy1) / 2
+    view = (cx - side / 2, cy - side / 2, side, side)
+    # stroke in viewBox units that lands on GLYPH_STROKE_PX at this zoom; the
+    # authored strokes (~3.4/60) are rescaled proportionally
+    authored = 3.4 * px / vw            # px it would have been unzoomed
+    zoomed = authored * vw / side
+    return render(svg, px, view, stroke_mul=GLYPH_STROKE_PX / zoomed if zoomed else 1.0)
+
+def glyphs_main(src_dir, out, png_dir):
+    lines = ["/* GENERATED by gen_icons.py --glyphs from assets/glyphs/*.svg (our original",
+             " * art). Do not edit by hand. Each array is a packed A8 alpha glyph, w == h ==",
+             " * the px in its name, tinted by fp_display.image_gray(). */",
+             "#ifndef SG_GLYPHS_H", "#define SG_GLYPHS_H", "#include <stdint.h>", ""]
+    for name, sizes in GLYPHS.items():
+        svg = open(os.path.join(src_dir, name + ".svg")).read()
+        for px in sizes:
+            im = fit_render(svg, px)
+            if png_dir:
+                os.makedirs(png_dir, exist_ok=True)
+                im.save(os.path.join(png_dir, "%s_%d.a8.png" % (name, px)))
+            data = list(im.getdata())
+            lines.append("static const uint8_t sg_glyph_%s_%d[%d] = {" % (name, px, px * px))
+            for i in range(0, len(data), 24):
+                lines.append("  " + ",".join(str(v) for v in data[i:i + 24]) + ",")
+            lines.append("};")
+            lines.append("")
+    lines.append("#endif")
+    open(out, "w").write("\n".join(lines) + "\n")
+    print("wrote", out, "glyphs:", ", ".join("%s%s" % (n, s) for n, s in GLYPHS.items()))
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--box", type=int, default=44)
+    ap.add_argument("--out", default=os.path.join(HERE, "sg_app_icons.h"))
+    ap.add_argument("--png-dir", default=None, help="also write preview PNGs here")
+    ap.add_argument("--glyphs", action="store_true", help="bake assets/glyphs/*.svg to sg_glyphs.h")
+    a = ap.parse_args()
+    if a.glyphs:
+        gdir = os.path.join(os.path.dirname(HERE), "glyphs")
+        out = a.out if a.out != os.path.join(HERE, "sg_app_icons.h") else os.path.join(gdir, "sg_glyphs.h")
+        glyphs_main(gdir, out, a.png_dir)
+        return
+    files = sorted(glob.glob(os.path.join(HERE, "*.svg")))
+    if not files:
+        print("no svg files", file=sys.stderr); sys.exit(1)
+    lines = ["/* GENERATED by gen_icons.py from the committed SVG",
+             " * app icons (our original art). Do not edit by hand; rerun the script.",
+             " * Each array is a packed %dx%d L8 (grayscale) icon for SG_ICON_L8. */" % (a.box, a.box),
+             "#ifndef SG_APP_ICONS_H", "#define SG_APP_ICONS_H", "#include <stdint.h>",
+             "#define SG_APP_ICON_BOX %d" % a.box, ""]
+    names = []
+    for f in files:
+        name = os.path.splitext(os.path.basename(f))[0]
+        im = render(open(f).read(), a.box)
+        if a.png_dir:
+            os.makedirs(a.png_dir, exist_ok=True)
+            im.save(os.path.join(a.png_dir, name + ".l8.png"))
+        data = list(im.getdata())
+        sym = "sg_icon_" + re.sub(r'[^a-z0-9]', '_', name.lower())
+        names.append((name, sym))
+        lines.append("static const uint8_t %s[%d] = {" % (sym, a.box * a.box))
+        for i in range(0, len(data), 20):
+            lines.append("  " + ",".join(str(v) for v in data[i:i + 20]) + ",")
+        lines.append("};")
+        lines.append("")
+    lines.append("#endif")
+    open(a.out, "w").write("\n".join(lines) + "\n")
+    print("wrote", a.out, "icons:", ", ".join(n for n, _ in names))
+
+if __name__ == "__main__":
+    main()

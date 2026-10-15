@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400">
+<defs>
+<linearGradient id="bbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14171C"/><stop offset="1" stop-color="#07080A"/></linearGradient>
+<radialGradient id="bglow" cx="0.22" cy="0.5" r="0.5"><stop offset="0" stop-color="#2F86FF" stop-opacity=".22"/><stop offset="1" stop-color="#2F86FF" stop-opacity="0"/></radialGradient>
+<radialGradient id="ggl" cx="0.85" cy="0.3" r="0.45"><stop offset="0" stop-color="#22E05A" stop-opacity=".10"/><stop offset="1" stop-color="#22E05A" stop-opacity="0"/></radialGradient>
+<clipPath id="ic"><rect width="1024" height="1024" rx="228"/></clipPath>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#FFFFFF" stroke-opacity=".035" stroke-width="1"/></pattern>
+</defs>
+<rect width="1280" height="400" rx="24" fill="url(#bbg)"/>
+<rect width="1280" height="400" rx="24" fill="url(#grid)"/>
+<rect width="1280" height="400" rx="24" fill="url(#bglow)"/>
+<rect width="1280" height="400" rx="24" fill="url(#ggl)"/>
+<g transform="translate(110,90) scale(0.2109)"><g clip-path="url(#ic)"><defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C1F25"/><stop offset="1" stop-color="#0A0B0E"/></linearGradient><linearGradient id="glass" x1="0" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#1A2B45"/><stop offset="1" stop-color="#0A1020"/></linearGradient><radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2F86FF" stop-opacity=".35"/><stop offset="1" stop-color="#2F86FF" stop-opacity="0"/></radialGradient><linearGradient id="rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6B727D"/><stop offset=".5" stop-color="#3A3F47"/><stop offset="1" stop-color="#25282E"/></linearGradient><clipPath id="lc"><rect x="196" y="232" width="652" height="580" rx="232"/></clipPath></defs><rect width="1024" height="1024" fill="url(#bg)"/><path d="M-20,372 C60,330 130,330 200,372" fill="none" stroke="url(#rim)" stroke-width="52" stroke-linecap="round"/><path d="M842,330 L1044,288" fill="none" stroke="url(#rim)" stroke-width="54" stroke-linecap="round"/><rect x="196" y="232" width="652" height="580" rx="232" fill="url(#glass)"/><g clip-path="url(#lc)"><circle cx="522" cy="522" r="300" fill="url(#glow)"/><path d="M196,640 L640,232 L760,232 L196,750 Z" fill="#FFFFFF" fill-opacity=".05"/></g><rect x="196" y="232" width="652" height="580" rx="232" fill="none" stroke="url(#rim)" stroke-width="58"/><path d="M371.6,428.4 C371.6,366.0 411.6,322.0 479.6,322.0 L571.6,322.0 C635.6,322.0 671.6,362.0 671.6,422.8 C671.6,486.0 635.6,524.4 571.6,524.4 L470.0,524.4 C407.6,524.4 371.6,566.0 371.6,623.6 C371.6,686.0 407.6,722.8 473.2,722.8 L574.0,722.8 C631.6,722.8 671.6,686.0 671.6,626.0" fill="none" stroke="#FFFFFF" stroke-width="46.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="672.4" cy="654.8" r="33.5" fill="#2E8BFF"/></g><rect width="1024" height="1024" rx="228" fill="none" stroke="#FFFFFF" stroke-opacity=".12" stroke-width="5"/></g>
+<g font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+<text x="390" y="200" font-size="104" font-weight="700" fill="#FFFFFF" letter-spacing="-2">Spare <tspan fill="#2E8BFF">io</tspan></text>
+<text x="394" y="258" font-size="27" font-weight="400" fill="#AEB4BE">A new launcher, apps &amp; phone companion for RayNeo iO glasses</text>
+<g font-size="20" font-weight="600" fill="#22E05A">
+<rect x="394" y="292" width="148" height="38" rx="19" fill="#22E05A" fill-opacity=".10" stroke="#22E05A" stroke-opacity=".45"/><text x="468" y="318" text-anchor="middle">Launcher</text>
+<rect x="556" y="292" width="118" height="38" rx="19" fill="#22E05A" fill-opacity=".10" stroke="#22E05A" stroke-opacity=".45"/><text x="615" y="318" text-anchor="middle">Music</text>
+<rect x="688" y="292" width="154" height="38" rx="19" fill="#22E05A" fill-opacity=".10" stroke="#22E05A" stroke-opacity=".45"/><text x="765" y="318" text-anchor="middle">Navigation</text>
+<rect x="856" y="292" width="148" height="38" rx="19" fill="#22E05A" fill-opacity=".10" stroke="#22E05A" stroke-opacity=".45"/><text x="930" y="318" text-anchor="middle">Assistant</text>
+<rect x="1018" y="292" width="136" height="38" rx="19" fill="#2E8BFF" fill-opacity=".12" stroke="#2E8BFF" stroke-opacity=".5"/><text x="1086" y="318" text-anchor="middle" fill="#5AA2FF">iOS app</text>
+</g></g>
+</svg>
