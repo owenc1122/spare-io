@@ -1,0 +1,2 @@
+aiohttp>=3.9
+tomli>=2.0; python_version < "3.11"

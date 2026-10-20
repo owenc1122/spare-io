@@ -88,6 +88,10 @@ make -C firmware/apps/frontend-v1 test
 make -C firmware/apps/frontend-v1 preview
 ```
 
+## Connect your own agent
+
+Use your own agent (Codex CLI, Claude Code, OpenClaw, Ollama or any OpenAI-compatible endpoint) as the glasses assistant: [`agent-bridge/`](agent-bridge/) is a small reference bridge, and the wire format is documented in [docs/agent/PROTOCOL.md](docs/agent/PROTOCOL.md) (Spare Agent Protocol v1).
+
 ## Contributing
 
 UI improvements, animation tweaks and bug reports are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first, and report security issues privately as described in [SECURITY.md](SECURITY.md).

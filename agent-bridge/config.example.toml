@@ -1,0 +1,39 @@
+# Copy to config.toml and run:  python -m spare_bridge --config config.toml
+# Environment variables override this file: SPARE_BRIDGE_TOKEN, SPARE_BRIDGE_HOST, SPARE_BRIDGE_PORT,
+# SPARE_BACKEND, SPARE_OPENAI_BASE_URL, SPARE_OPENAI_API_KEY, SPARE_OPENAI_MODEL.
+
+backend = "openai"          # echo | openai | codex | claude
+
+[server]
+host = "0.0.0.0"            # use "127.0.0.1" when a tunnel/proxy runs on the same machine
+port = 8787
+name = "My agent"           # shown in the app's Settings
+# token = ""                # better: env SPARE_BRIDGE_TOKEN. Empty = generated on first run, printed once
+chunking = "sentence"       # sentence = speak per sentence; token = forward raw deltas
+actions = true              # allow [[card:..]] [[end]] [[listen:30]] markers -> spare.action events
+ping_interval = 10          # seconds between ": ping" keep-alives while the backend is silent
+session_ttl = 900           # idle seconds before a session is forgotten
+# extra_prompt = "You are Ada, my assistant."   # appended to the glasses system prompt
+
+# --- OpenAI-compatible endpoint: OpenAI, Ollama, LM Studio, vLLM, DeepSeek, OpenClaw gateway ---
+[openai]
+base_url = "http://127.0.0.1:11434/v1"   # Ollama. OpenAI: https://api.openai.com/v1
+model = "qwen2.5:7b"
+# api_key = ""                            # better: env SPARE_OPENAI_API_KEY
+max_tokens = 200
+# temperature = 0.6
+history_messages = 16
+# extra_body = { reasoning_effort = "low" }
+
+# --- OpenAI Codex CLI (`codex exec --json`, resumed per session) ---
+[codex]
+command = "codex"
+workdir = ""                # an empty scratch dir is a good idea
+extra_args = []             # e.g. ["-c", "model_reasoning_effort=low", "--sandbox", "read-only"]
+
+# --- Claude Code print mode (`claude -p --output-format stream-json`) ---
+[claude]
+command = "claude"
+workdir = ""
+model = ""                  # e.g. "haiku" for speed
+extra_args = []             # e.g. ["--allowedTools", "WebSearch"]

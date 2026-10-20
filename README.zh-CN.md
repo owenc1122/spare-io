@@ -88,6 +88,10 @@ make -C firmware/apps/frontend-v1 test
 make -C firmware/apps/frontend-v1 preview
 ```
 
+## 接入自己的 Agent
+
+用你自己的 Agent（Codex CLI、Claude Code、OpenClaw、Ollama 或任何 OpenAI 兼容端点）做眼镜助手：[`agent-bridge/`](agent-bridge/) 是一个小型参考桥，协议见 [docs/agent/PROTOCOL.zh-CN.md](docs/agent/PROTOCOL.zh-CN.md)（Spare Agent 协议 v1）。
+
 ## 参与贡献
 
 欢迎提交界面改进、动效调整和 bug。请先读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
