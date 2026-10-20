@@ -170,7 +170,8 @@ when a conversation starts (a quick `401`/`404` answer is fine for the warm-up).
 | `capabilities` | Optional array. `streaming` (always true in v1), `actions` (the agent may emit section 4.1 events), `session-memory` (send only the new utterance, see section 3). Unknown strings are ignored. |
 
 If the handshake returns `404`/`405`, the server is treated as a plain OpenAI-compatible server: it works in history mode with no actions.
-`401`/`403` means the token is wrong. The handshake result is remembered from the last successful test; after the user changes the address it is forgotten
+In that case **Test connection** reports "Connected (compatibility mode)" with the note that there is no session memory and no glasses actions, and that the
+agent-bridge gives the full feature set; it is a working setup, not an error.`401`/`403` means the token is wrong. The handshake result is remembered from the last successful test; after the user changes the address it is forgotten
 until the next test.
 
 ## 6. Sessions and memory
@@ -244,48 +245,112 @@ async def chat(req: Request):
 `protocol` is an integer. Additions that old apps can ignore (new optional fields, new action types, new capability strings) do not change it. A breaking change
 increments it, and the app tells the user when the agent advertises a version it does not support.
 
-## 11. Optional extension (proposal): custom speech recognition
+## 11. Optional extension: custom speech recognition
 
-Everything above assumes the phone's own recogniser. Because the agent receives **text**
-and never audio, a mis-recognition cannot be repaired on the server — and on the glasses
-the recogniser is the weak link: the microphone is far-field, the audio arrives over
-Bluetooth, and the interaction is built on short utterances, where an acoustic model has
-the least context to recover from. Two-syllable Chinese commands are the common failure
-case ("快答" → "块答", "克劳德" → "克劳得").
-
-This section is a **proposal**, not implemented behaviour. It adds an optional,
-off-by-default path and leaves protocol `1`, §2 authentication, §3–§6 and every existing
-server unchanged.
+Everything above assumes the phone's own recogniser. Because the agent receives **text** and never audio, a mis-recognition cannot be repaired on the
+server, and on the glasses the recogniser is the weak link: the microphone is far-field, the audio arrives over Bluetooth, and the interaction is built on
+short utterances, where an acoustic model has the least context to recover from (two-syllable Chinese commands such as "kuai da" are the common
+failure case). This section adds an optional, **off-by-default** path. It leaves protocol `1`, section 2 authentication, sections 3 to 6 and every existing
+server unchanged. (Shape proposed by the community in owenc1122/spare-io#2.)
 
 ### 11.1 Setting
 
-Under 设置 → 开发者功能 → 接入自己的 Agent, next to 地址 and 令牌:
+Under **Settings > Developer > Custom speech recognition**, separate from Connect your own agent:
 
-| field | values |
+| Field | Values |
 |---|---|
-| 语音识别 | `系统`（默认） / `自定义端点` |
-| 识别端点 `{ASR_BASE}` | `https://…`; required when 自定义端点 is on |
-| 识别令牌 | optional; empty = reuse the agent token |
+| Use custom speech recognition | off (default) / on. A one-line warning is shown at the moment it is turned on. |
+| Recognition address `{ASR_BASE}` | `https://...` (https only). Same base rules as section 2: `{ASR_BASE}`, `{ASR_BASE}/v1` or `{ASR_BASE}/v1/asr`. |
+| Key | Optional bearer token, stored in the phone's secure storage. Empty = reuse the agent token, **only when `{ASR_BASE}` is on the same host as the agent**; never sent to another host. |
+| Test | Sends one second of silence; any `2xx` with a body in the 11.3 format counts as working. |
+
+It applies **only to the utterance the user says to the assistant while the agent has taken over** (including follow-ups). Live captions, all-day memo and
+recordings always stay on the phone. The phone's own recogniser still runs for the live text and as the fallback; with this extension on, the phone's cloud
+dictation helper is not used for these utterances, so the audio goes to one place only.
 
 ### 11.2 Request
 
-`POST {ASR_BASE}/v1/asr`, one utterance per request.
+`POST {ASR_BASE}/v1/asr`, one utterance per request, sent when the user has finished speaking.
 
-| item | value |
+| Item | Value |
 |---|---|
-| body | raw audio, mono, 16 kHz, ≤ 15 s |
-| `Content-Type` | `audio/wav; rate=16000; channels=1; bits=16` (or `audio/opus`) |
-| `Authorization` | `Bearer <token>` when a token is configured |
+| Body | The whole utterance as one WAV file: mono, 16 kHz, 16-bit little-endian PCM, canonical 44-byte header, at most 15 s. |
+| `Content-Type` | `audio/wav; rate=16000; channels=1; bits=16` |
+| `Accept` | `application/json` |
+| `Authorization` | `Bearer <key>` when a key (or the reused agent token) is configured |
+
+An utterance longer than 15 s is not sent: the phone's recogniser keeps it.
 
 ### 11.3 Response
 
-- `200 {"text": "…"}` — UTF-8. Empty or whitespace-only text means "nothing recognised".
-- Any non-2xx, a timeout (suggested 3 s) or an unparsable body: the phone falls back to its
-  own recogniser, so this extension can never make the assistant unusable.
-- The request is not retried, matching §3.
+- `200` with `{"text": "..."}`, UTF-8. Extra fields are ignored. Empty or whitespace-only text means "nothing recognised" and the phone's text is used.
+- Any non-`2xx`, a timeout (**3 seconds** for the whole request) or an unparsable body: the phone uses the text of its own recogniser, so this extension can
+  never make the assistant unusable.
+- The request is not retried, matching section 3.
 
 ### 11.4 Privacy
 
-Audio leaves the phone only when `自定义端点` is explicitly enabled, and the app shows a
-one-line warning at the moment it is turned on. The endpoint must be `https://` and should
-require a token, per §8.
+Audio leaves the phone only when custom speech recognition is explicitly enabled, only for the assistant utterance in agent mode, and only to the https
+address the user entered. The endpoint should require a key, per section 8. The key is never logged.
+
+Differences from the original proposal: the setting is its own page (not a field of the agent page) and has a Test button; the key falls back to the
+agent token only for the same host; only the WAV body is implemented (not `audio/opus`); empty text falls back to the phone's text.
+
+## 12. Optional extension: custom speech synthesis
+
+By default the reply is read aloud by the phone's own voice, sentence by sentence while it streams. This **off-by-default** extension lets the user read
+the agent's reply with their own TTS service instead. It applies only while the agent has taken over, and only when the phone's "read answers aloud"
+switch is on.
+
+### 12.1 Setting
+
+Under **Settings > Developer > Agent reading voice**:
+
+| Field | Values |
+|---|---|
+| Voice | `Phone` (default) / `My own cloud TTS` |
+| Address `{TTS_BASE}` | `https://...`, or `http://` on the local network. `{TTS_BASE}`, `{TTS_BASE}/v1` or `{TTS_BASE}/v1/audio/speech`. |
+| Key | Optional bearer token (secure storage, never logged). |
+| Model, Voice | Optional strings sent as-is. Left empty, the fields are not sent and the server's defaults apply. |
+| Listen | Speaks a sample sentence through the endpoint and shows the time to the audio. |
+
+### 12.2 Request
+
+`POST {TTS_BASE}/v1/audio/speech`, OpenAI-compatible, **one request per sentence**, sent as soon as the sentence is complete (the next sentences are
+requested while the current one plays; they are played strictly in order).
+
+```http
+POST /v1/audio/speech
+Authorization: Bearer <key>          (when a key is set)
+Content-Type: application/json
+
+{"model": "tts-1", "voice": "alloy", "input": "Done, I will remind you.", "response_format": "pcm", "stream": true}
+```
+
+| Field | Meaning |
+|---|---|
+| `input` | One sentence of plain text (Markdown symbols removed). |
+| `model`, `voice` | Only when the user filled them in. |
+| `response_format` | `pcm` is requested. The app also plays `mp3` and `wav` when the server answers with them (see 12.3). |
+| `stream` | `true` for `pcm`. Servers that do not know the field must ignore it. |
+
+### 12.3 Response
+
+- `200` with audio. The body may be sent with chunked transfer encoding; **start sending audio as soon as you have it**: with `pcm` the phone plays the first chunk
+  the moment it arrives (first audio about 50 ms after the first bytes).
+- `pcm` is signed 16-bit little-endian, mono. The sample rate is `rate=N` in `Content-Type` (for example `audio/L16; rate=16000`), else the `X-Sample-Rate` header,
+  else **24000** (the OpenAI `pcm` format).
+- The format actually sent is taken from `Content-Type`: `audio/mpeg` is mp3, `audio/wav` or `audio/x-wav` is wav (these are collected whole before playing),
+  `audio/L16`, `audio/pcm` or `application/octet-stream` is pcm.
+- A `200` with a JSON or text body (some gateways report errors that way) counts as an error.
+
+### 12.4 Fallback
+
+The phone speaks that sentence with its own voice, silently, and continues with the cloud voice for the next sentence, when: the request fails, the status is
+not `2xx`, the body is not audio, or **no audio byte arrives within 3 seconds** of the request. If a sentence already started playing and then breaks off, it is
+not repeated. The request is not retried.
+
+### 12.5 Privacy
+
+The text of the agent's reply (never the user's audio) is sent to the address the user entered, only while the agent has taken over and only when this
+voice is selected. The key is stored in the phone's secure storage and is never logged. The normal (non-agent) assistant always uses the phone's voice.

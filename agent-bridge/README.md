@@ -62,6 +62,22 @@ The app allows plain `http://` only for IP addresses on the local network (iOS a
 - Actions: the model may write `[[card:Title|row 1|row 2|icon=check]]`, `[[end]]`, `[[listen:30]]`; the bridge strips them from the spoken text and sends `spare.action` events.
 - Sentence chunking: the first chunk may end at the first comma so speech starts sooner. `chunking = "token"` forwards raw deltas instead.
 
+## Optional: custom speech recognition and voice (off by default)
+
+Two optional endpoints implement protocol sections 11 and 12. They are disabled unless you set `enabled = true` in `config.toml` (see `[asr]` and `[tts]` in `config.example.toml`) and use the same bearer token as the chat endpoint.
+
+| Endpoint | What it does | Config |
+|---|---|---|
+| `POST /v1/asr` | Receives the app's WAV (16 kHz mono 16-bit, at most 15 s) and returns `{"text": "..."}`. | `provider = "openai"` forwards to any OpenAI-compatible `/audio/transcriptions` (set `base_url`, `api_key`, `model`). `provider = "local"` runs [faster-whisper](https://github.com/SYSTRAN/faster-whisper) on this machine; install it yourself (`pip install faster-whisper`), it is not a dependency of the bridge. |
+| `POST /v1/audio/speech` | Forwards each sentence to an OpenAI-compatible TTS endpoint and streams the audio back as it arrives (`pcm`, 24 kHz unless you set `sample_rate`). | `[tts]` `base_url`, `api_key`, `model`, `voice`. The app's own Model/Voice fields win when filled in. |
+
+In the app (**Settings -> 开发者功能**):
+
+- **自定义语音识别**: turn it on, set the recognition address to your bridge's **HTTPS** address (the ASR address must be `https://`; see "Away from home" above) and leave the key empty to reuse the agent token (only works when it is the same host as the agent address). Tap the test button.
+- **Agent 朗读声音**: choose "my own cloud TTS", address = your bridge (`http://<LAN IP>:8787` works on the local network), key = the bridge token, Model/Voice optional. Tap the listen button to hear the time to first audio.
+
+The app falls back to the phone's recogniser and voice if the bridge fails or takes longer than 3 seconds, so a slow upstream makes the experience worse, never broken. Both extensions only apply while the agent has taken over the assistant.
+
 ## Latency tips
 
 - First sentence under 1 s needs a streaming backend and a fast model: a small local model, `gpt-4.1-mini`-class, DeepSeek chat, or Claude Haiku. Reasoning models think silently before the first word; lower their effort (`extra_body = { reasoning_effort = "low" }`, Codex `-c model_reasoning_effort=low`).

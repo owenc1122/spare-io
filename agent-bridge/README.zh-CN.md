@@ -62,6 +62,22 @@ App 只允许对局域网内的 IP 地址使用明文 `http://`（iOS 会请求�
 - 动作：模型可在回答里写 `[[card:标题|行1|行2|icon=check]]`、`[[end]]`、`[[listen:30]]`；桥会把它们从朗读文字中去掉并发出 `spare.action` 事件。
 - 逐句切分：第一块可在第一个逗号处结束，更早开口。`chunking = "token"` 则原样转发 token。
 
+## 可选：自定义语音识别与朗读声音（默认关闭）
+
+两个可选端点实现协议第 11、12 节。除非在 `config.toml` 里设 `enabled = true`（见 `config.example.toml` 的 `[asr]`、`[tts]`），否则不启用；认证使用与对话相同的 Bearer 令牌。
+
+| 端点 | 作用 | 配置 |
+|---|---|---|
+| `POST /v1/asr` | 接收 App 发来的 WAV（16 kHz 单声道 16 位，最长 15 秒），返回 `{"text": "..."}`。 | `provider = "openai"` 转发到任意 OpenAI 兼容的 `/audio/transcriptions`（填 `base_url`、`api_key`、`model`）。`provider = "local"` 在本机运行 [faster-whisper](https://github.com/SYSTRAN/faster-whisper)，需自行安装（`pip install faster-whisper`），不是桥的依赖。 |
+| `POST /v1/audio/speech` | 把每一句转发给 OpenAI 兼容的 TTS 端点，音频边到边流式回传（`pcm`，默认 24 kHz，可用 `sample_rate` 修改）。 | `[tts]` 的 `base_url`、`api_key`、`model`、`voice`。App 里填了的模型/声音优先。 |
+
+在 App 里（**设置 -> 开发者功能**）：
+
+- **自定义语音识别**：打开，识别地址填桥的 **HTTPS** 地址（识别地址必须是 `https://`，见上面「不在家：HTTPS」）；密钥留空表示复用 Agent 令牌（仅当与 Agent 地址同一主机时有效）。点测试按钮。
+- **Agent 朗读声音**：选「我自己的云端 TTS」，地址填桥（局域网内 `http://<电脑 IP>:8787` 可用），密钥填桥的令牌，模型/声音可不填。点试听可看到首个音频的耗时。
+
+桥出错或超过 3 秒没响应时，App 会回落到手机自己的识别器和声音，所以上游慢只会变差，不会坏。两项扩展都只在 Agent 接管助手时生效。
+
 ## 降低延迟
 
 - 首句低于 1 秒需要流式后端和快模型：小型本地模型、`gpt-4.1-mini` 一档、DeepSeek chat 或 Claude Haiku。推理模型在第一个字之前会静默思考，请调低推理强度（`extra_body = { reasoning_effort = "low" }`，Codex 用 `-c model_reasoning_effort=low`）。

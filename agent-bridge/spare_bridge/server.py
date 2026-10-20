@@ -18,6 +18,7 @@ from .chunker import SentenceChunker
 from .config import Config
 from .prompt import normalize_locale, system_prompt
 from .sessions import SessionStore
+from .speech import asr_handler, make_transcriber, tts_handler
 
 log = logging.getLogger("spare_bridge")
 
@@ -203,14 +204,22 @@ async def _janitor(app: web.Application):
     task = asyncio.create_task(loop())
     yield
     task.cancel()
+    http = app[K_STATE].get("http")
+    if http is not None:
+        await http.close()
     await app[K_STATE]["backend"].close()
 
 
-def create_app(cfg: Config, token: str | None, backend: Backend | None = None) -> web.Application:
+def create_app(cfg: Config, token: str | None, backend: Backend | None = None, transcriber=None) -> web.Application:
     """token=None disables auth (development only)."""
-    app = web.Application()
+    app = web.Application(client_max_size=2 * 1024 * 1024)
     app[K_STATE] = {"cfg": cfg, "token": token, "backend": backend or create_backend(cfg),
                     "sessions": SessionStore(cfg.session_ttl)}
+    if cfg.asr.get("enabled"):  # optional extension, protocol section 11
+        app[K_STATE]["asr"] = transcriber or make_transcriber(cfg.asr)
+        app.router.add_post("/v1/asr", asr_handler)
+    if cfg.tts.get("enabled"):  # optional extension, protocol section 12
+        app.router.add_post("/v1/audio/speech", tts_handler)
     app.router.add_get("/v1/spare/agent", handshake)
     app.router.add_post("/v1/chat/completions", chat)
     app.router.add_get("/healthz", health)

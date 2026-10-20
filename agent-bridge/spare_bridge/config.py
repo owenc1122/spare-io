@@ -27,6 +27,8 @@ class Config:
     extra_prompt: str = ""
     token_file: str = str(Path.home() / ".spare-agent-bridge" / "token")
     backends: dict = field(default_factory=dict)  # per-backend option tables
+    asr: dict = field(default_factory=dict)  # [asr]: optional POST /v1/asr (off unless enabled = true)
+    tts: dict = field(default_factory=dict)  # [tts]: optional POST /v1/audio/speech (off unless enabled = true)
 
     def opt(self, name: str, key: str, default=None):
         return self.backends.get(name, {}).get(key, default)
@@ -58,6 +60,9 @@ def load_config(path: str | None = None) -> Config:
                 setattr(cfg, k, v)
         if "backend" in data:
             cfg.backend = data["backend"]
+        for sect in ("asr", "tts"):
+            if isinstance(data.get(sect), dict):
+                setattr(cfg, sect, data[sect])
         for name in ("openai", "codex", "claude", "echo"):
             if name in data:
                 cfg.backends[name] = data[name]

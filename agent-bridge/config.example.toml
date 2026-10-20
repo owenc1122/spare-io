@@ -37,3 +37,23 @@ command = "claude"
 workdir = ""
 model = ""                  # e.g. "haiku" for speed
 extra_args = []             # e.g. ["--allowedTools", "WebSearch"]
+
+# --- Optional: custom speech recognition for the app (protocol section 11). OFF by default. ---
+# The app sends one WAV (16 kHz mono 16-bit, <= 15 s) to POST /v1/asr and expects {"text": "..."}.
+[asr]
+enabled = false
+provider = "openai"         # openai = any OpenAI-compatible /audio/transcriptions | local = faster-whisper (pip install faster-whisper)
+base_url = "https://api.openai.com/v1"
+model = "whisper-1"         # local: tiny | base | small | medium ...
+# api_key = ""
+# language = ""             # empty = from X-Spare-Locale (zh-CN -> zh, zh-HK -> yue, en-US -> en)
+
+# --- Optional: custom speech synthesis for the app (protocol section 12). OFF by default. ---
+# The app sends one JSON request per sentence to POST /v1/audio/speech; the bridge streams the audio back.
+[tts]
+enabled = false
+base_url = "https://api.openai.com/v1"
+model = "tts-1"             # used when the app leaves Model empty
+voice = "alloy"             # used when the app leaves Voice empty
+# api_key = ""
+sample_rate = 24000         # sent as X-Sample-Rate for pcm when the upstream gives none (OpenAI pcm = 24000)
