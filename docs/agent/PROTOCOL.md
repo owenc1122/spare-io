@@ -243,3 +243,49 @@ async def chat(req: Request):
 
 `protocol` is an integer. Additions that old apps can ignore (new optional fields, new action types, new capability strings) do not change it. A breaking change
 increments it, and the app tells the user when the agent advertises a version it does not support.
+
+## 11. Optional extension (proposal): custom speech recognition
+
+Everything above assumes the phone's own recogniser. Because the agent receives **text**
+and never audio, a mis-recognition cannot be repaired on the server — and on the glasses
+the recogniser is the weak link: the microphone is far-field, the audio arrives over
+Bluetooth, and the interaction is built on short utterances, where an acoustic model has
+the least context to recover from. Two-syllable Chinese commands are the common failure
+case ("快答" → "块答", "克劳德" → "克劳得").
+
+This section is a **proposal**, not implemented behaviour. It adds an optional,
+off-by-default path and leaves protocol `1`, §2 authentication, §3–§6 and every existing
+server unchanged.
+
+### 11.1 Setting
+
+Under 设置 → 开发者功能 → 接入自己的 Agent, next to 地址 and 令牌:
+
+| field | values |
+|---|---|
+| 语音识别 | `系统`（默认） / `自定义端点` |
+| 识别端点 `{ASR_BASE}` | `https://…`; required when 自定义端点 is on |
+| 识别令牌 | optional; empty = reuse the agent token |
+
+### 11.2 Request
+
+`POST {ASR_BASE}/v1/asr`, one utterance per request.
+
+| item | value |
+|---|---|
+| body | raw audio, mono, 16 kHz, ≤ 15 s |
+| `Content-Type` | `audio/wav; rate=16000; channels=1; bits=16` (or `audio/opus`) |
+| `Authorization` | `Bearer <token>` when a token is configured |
+
+### 11.3 Response
+
+- `200 {"text": "…"}` — UTF-8. Empty or whitespace-only text means "nothing recognised".
+- Any non-2xx, a timeout (suggested 3 s) or an unparsable body: the phone falls back to its
+  own recogniser, so this extension can never make the assistant unusable.
+- The request is not retried, matching §3.
+
+### 11.4 Privacy
+
+Audio leaves the phone only when `自定义端点` is explicitly enabled, and the app shows a
+one-line warning at the moment it is turned on. The endpoint must be `https://` and should
+require a token, per §8.
