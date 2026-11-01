@@ -16,4 +16,6 @@
 
 正文自然叙述，保留素材明确支持的个人感受和判断，不冒认说话人的身份。所有值得保留的决定、安排和数值都融入正文，同时整理进列表字段。列表是App的要点、待办、决定、待跟进、人物栏目和记忆检索的数据来源，与正文并存，不能一律留空：highlights 写当天最重要的事，最多5条，每条一句、不超过30字，必须在 overview 里有依据；todos 合并去重输入里的全部待办（同一件事只留一条，保留最具体的负责人和截止时间），按截止时间先后排序，每项 {owner,task,due}；decisions 合并去重输入里已达成的结论；people 写当天有实质交流的人，可附一句话说明谈了什么，如“说话人 2（同事，一起排查导出问题）”；follow_ups 写需要后续跟进、但还没形成明确待办的事（未定的问题、等别人答复的事）。只依据输入，不新增输入里没有的待办或决定，状态与正文一致；确实没有符合条件的项才给 []，不凑数。不要输出“说话人N说了什么”、材料处理说明、无关影视剧情或琐碎待办。输出字段和类型完全遵守schema。
 
-输出契约：顶层只能有 overview、highlights、todos、decisions、people、follow_ups。overview 为字符串；highlights、decisions、people、follow_ups 为字符串数组；todos 每项为 {"owner":"","task":"","due":""}，值都是字符串，没有符合条件的项时为 []。overview 内部用转义换行保留段落，整个响应必须是合法 JSON。输入为当天所有已完成分块的 segments，按时间排列；汇总前须确认提供了全部已有分块。
+输出契约：顶层只能有 overview、highlights、todos、decisions、people、follow_ups。overview 为字符串；highlights、decisions、people、follow_ups 为字符串数组；todos 每项为 {"owner":"","task":"","due":""}，值都是字符串，没有符合条件的项时为 []。overview 内部用转义换行保留段落，整个响应必须是合法 JSON，写成一行（不换行、不缩进）。格式示例：
+{"overview":"","highlights":[],"todos":[{"owner":"","task":"","due":""}],"decisions":[],"people":[],"follow_ups":[]}
+输入为当天已完成分块的整理稿，按时间排列；当天记录很长时，输入也可能是其中一组时段，或几组时段的中间汇总，照同样规则写，不要因此拒绝或注明不完整。
