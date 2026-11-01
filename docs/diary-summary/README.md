@@ -8,20 +8,20 @@
 
 | 文件 | 适用输入 | 输出 |
 |---|---|---|
-| [chunk.prompt.txt](chunk.prompt.txt) | 带时间和行号的转录块 | `segments`、`irrelevant`，保留现有分段字段 |
-| [daily.prompt.txt](daily.prompt.txt) | 当天全部已完成分块的整理稿 | `overview` 和兼容字段 |
+| [chunk.prompt.txt](chunk.prompt.txt) | 带时间和行号的转录块 | `segments`、`irrelevant`，分段列表字段照常填写 |
+| [daily.prompt.txt](daily.prompt.txt) | 当天全部已完成分块的整理稿 | `overview` 和要点、待办、决定、人物、待跟进列表 |
 | [whole-day.prompt.txt](whole-day.prompt.txt) | 一次提供当天完整原文的实现 | 全天回顾、逐小时正文及原文支持 ID |
 
-前两份适合保留现有 App JSON 结构。它们保留最终版正文规则，只把本地路由语句改成独立提示词，并补全输出契约。`participants`、`todos`、`decisions`、`key_info`、`highlights`、`people`、`follow_ups` 在对应接口中返回空数组；重要决定、数字和安排直接写入正文。
+前两份适合保留现有 App JSON 结构。它们保留最终版正文规则，只把本地路由语句改成独立提示词，并补全输出契约。重要决定、数字和安排写进正文，同时照常填写 `participants`、`todos`、`decisions`、`key_info`、`highlights`、`people`、`follow_ups`：App 的待办、决定、关键信息、要点、人物、待跟进栏目，Nova 的记忆检索和发给 Agent 的待办都读这些字段，留空会让这些功能失效。列表只收正文里有依据、状态一致的项，没有符合条件的项才给 `[]`。
 
-第三份保留最终版完整原文写作提示词，供以后使用全日原文的实现参考。它需要调用方另行提供匹配的 schema：`title`、`overview` 段落和 `hours`；段落有 `text` 与 `source_ids`，每小时有 `kind`、`paragraphs`，小时键与输入的 `supplied_hours` 一致。它不与前两份叠加发送。输入中的 `complete_originals` 可按 `[source_id, hour_id, time, speaker, complete_original]` 保存完整原文，`supplied_hours` 给出每个小时的 `id` 和 `label`；输出 `hours` 使用这些 `id` 作键。`kind` 可为 `event`、`mixed`、`media`、`noise` 或 `uncertain`。纯媒体/噪音时该小时 `paragraphs` 为空；支持 ID 仅保存在 JSON 中。
+第三份保留最终版完整原文写作提示词，供以后使用全日原文的实现参考。它需要调用方另行提供匹配的 schema：`title`、`overview` 段落、`hours`，以及与每日回顾相同的 `highlights`、`todos`、`decisions`、`people`、`follow_ups`；段落有 `text` 与 `source_ids`，每小时有 `kind`、`paragraphs`，小时键与输入的 `supplied_hours` 一致。它不与前两份叠加发送。输入中的 `complete_originals` 可按 `[source_id, hour_id, time, speaker, complete_original]` 保存完整原文，`supplied_hours` 给出每个小时的 `id` 和 `label`；输出 `hours` 使用这些 `id` 作键。`kind` 可为 `event`、`mixed`、`media`、`noise` 或 `uncertain`。纯媒体/噪音时该小时 `paragraphs` 为空；支持 ID 仅保存在 JSON 中。
 
 ## 总结方法
 
 1. **先读全，再取舍。** 分块阶段只声明当前块的覆盖范围；每日回顾必须等已有分块齐全后读取所有时段及结尾。不能拿最后一块冒充整天，也不能把短导语当成完整正文。
 2. **按事件写，以小时组织。** 有实质内容的小时通常写 1—2 个自然段；同一小时内相关片段合并，不按每几分钟切卡。跨小时同一事件延续时保留新进展，重复背景缩短。没有有效内容的时段留空，不为补齐时间线编造活动。
 3. **篇幅服从信息量。** 分段通常 120—260 中文字，全天回顾通常 200—350 字；完整原文模式的一天全文可参考 1500—2800 字。这些是参考，不是配额。复杂事项多讲必要细节，普通吃饭、找东西、调音量等不逐条记。
-4. **区分短句和正文。** 简短卡片导语只能承担引导作用，不能替代解释过程与变化的正式总结。正文保留重要条件、金额、时间、取舍和最终状态；不在正文后再次列出同一套要点、待办、人物。
+4. **区分短句和正文。** 简短卡片导语只能承担引导作用，不能替代解释过程与变化的正式总结。正文保留重要条件、金额、时间、取舍和最终状态；正文里不再附一份要点、待办、人物清单，这些放进对应的列表字段，供 App 栏目和检索使用。
 5. **辨别真实经历与外放内容。** 影视、广告、新闻、导航、游戏剧情不写成本人的经历；混合录音只留下真人有内容的互动。有效的短暂学习、体验和重要异常仍应保留。
 6. **保住事实关系。** ASR 的“我”和说话人编号不能独立证明身份；不猜亲属或业务关系。请求、提议、计划、尝试、完成分别表达，保留否定、条件、金额修饰和前后纠正。只有后文确认结果，才更新最终状态。
 7. **成稿核对原文。** 对照所覆盖的原文检查主线、结尾变化、主体、数字、条件和媒体混入；需要修正时只改有依据的事实与表达。分块已经丢失的信息不能靠每日阶段猜回来。
