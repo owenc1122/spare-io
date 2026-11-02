@@ -1,0 +1,156 @@
+{
+  "id": "dev.spare.pomodoro",
+  "name": "番茄钟+",
+  "version": 1,
+  "data_version": 1,
+  "author": "Spare",
+  "description": "转动表冠调时长，单击开始/暂停，完成数记在眼镜上；手机上可以改时长、样式、清零。",
+  "permissions": [],
+  "requests": [
+    {
+      "name": "setctl",
+      "kind": "control_set"
+    }
+  ],
+  "ui": [
+    {
+      "id": "title",
+      "type": "text",
+      "x": 24,
+      "y": 14,
+      "w": 300,
+      "h": 30,
+      "size": 22,
+      "gray": 140,
+      "text": "番茄钟+"
+    },
+    {
+      "id": "count",
+      "type": "text",
+      "x": 300,
+      "y": 14,
+      "w": 216,
+      "h": 30,
+      "size": 22,
+      "gray": 140,
+      "align": "right",
+      "text": ""
+    },
+    {
+      "id": "time",
+      "type": "text",
+      "x": 0,
+      "y": 40,
+      "w": 540,
+      "h": 104,
+      "size": 96,
+      "bold": true,
+      "align": "center",
+      "text": "25:00"
+    },
+    {
+      "id": "bar",
+      "type": "bar",
+      "x": 70,
+      "y": 148,
+      "w": 400,
+      "h": 8,
+      "radius": 4,
+      "value": 0
+    },
+    {
+      "id": "hint",
+      "type": "text",
+      "x": 0,
+      "y": 162,
+      "w": 540,
+      "h": 30,
+      "size": 20,
+      "gray": 200,
+      "align": "center",
+      "text": "单击开始 · 转动表冠调时长"
+    },
+    {
+      "id": "done",
+      "type": "rect",
+      "x": 150,
+      "y": 70,
+      "w": 240,
+      "h": 64,
+      "radius": 32,
+      "gray": 40,
+      "hidden": true,
+      "children": [
+        {
+          "type": "text",
+          "x": 0,
+          "y": 14,
+          "w": 240,
+          "h": 36,
+          "size": 28,
+          "bold": true,
+          "align": "center",
+          "text": "完成一个！"
+        }
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "minutes",
+      "type": "slider",
+      "label": "专注时长",
+      "unit": "分钟",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "default": 25
+    },
+    {
+      "id": "rest",
+      "type": "stepper",
+      "label": "休息时长",
+      "unit": "分钟",
+      "min": 1,
+      "max": 15,
+      "default": 5
+    },
+    {
+      "id": "bar",
+      "type": "switch",
+      "label": "显示进度条",
+      "default": 1
+    },
+    {
+      "id": "style",
+      "type": "picker",
+      "label": "时间样式",
+      "options": [
+        "大字",
+        "细字",
+        "暗"
+      ],
+      "default": 0
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "label": "标题",
+      "max": 21,
+      "default": "番茄钟+",
+      "hint": "眼镜左上角显示的文字"
+    },
+    {
+      "id": "finished",
+      "type": "label",
+      "label": "累计完成",
+      "default": "0"
+    },
+    {
+      "id": "reset",
+      "type": "button",
+      "label": "清零完成数",
+      "confirm": "确定把累计完成数清零？"
+    }
+  ]
+}

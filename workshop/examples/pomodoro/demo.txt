@@ -1,0 +1,18 @@
+open
+shot pomodoro-1-open
+crown -1
+crown -1
+crown -1
+crown -1
+shot pomodoro-2-five-min
+click
+tick 3000
+shot pomodoro-3-running
+click
+shot pomodoro-4-paused
+click
+tick 297000
+record pomodoro-5-done 600
+close
+open
+shot pomodoro-6-reopen

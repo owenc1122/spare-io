@@ -44,6 +44,7 @@ Only trust links published there. Any other app called "Spare io", or a paid cop
 | Original icons and glyphs (SVG sources) | `firmware/apps/frontend-v1/assets/` |
 | Host LVGL preview renderer | `firmware/apps/frontend-v1/backend-lvgl/host/` |
 | Glasses app SDK header | `firmware/sdk/sg_sdk.h` |
+| Spare Workshop developer kit: SpareScript guide, app format, starter template, example app | `workshop/` |
 
 The glasses runtime, phone link, firmware tooling and feature apps are not part of this repository.
 
@@ -91,6 +92,10 @@ make -C firmware/apps/frontend-v1 preview
 ## Connect your own agent
 
 Use your own agent (Codex CLI, Claude Code, OpenClaw, Ollama or any OpenAI-compatible endpoint) as the glasses assistant: [`agent-bridge/`](agent-bridge/) is a small reference bridge, and the wire format is documented in [docs/agent/PROTOCOL.md](docs/agent/PROTOCOL.md) (Spare Agent Protocol v1).
+
+## Build apps for the glasses
+
+Write your own glasses apps in SpareScript and publish them to the Spare Workshop. [`workshop/`](workshop/) has the developer guide, the app package and wire format, a starter template and a Pomodoro example with a phone control panel (`controls`). The full guide is also at <https://spare.cool/dev/docs> (Chinese).
 
 ## Contributing
 

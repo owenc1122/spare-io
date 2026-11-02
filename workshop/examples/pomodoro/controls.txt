@@ -1,0 +1,22 @@
+# 手机控制面板：改时长、样式、标题、清零；眼镜上转表冠时手机滑块跟着变
+open
+shot controls-1-open
+control minutes 10
+control title 下午 专注
+control style 1
+shot controls-2-after-panel
+crown +1
+tick 1000
+panel
+control bar 0
+shot controls-3-no-bar
+click
+tick 900000
+panel
+control reset
+panel
+shot controls-4-reset
+close
+control minutes 40
+open
+shot controls-5-reopen

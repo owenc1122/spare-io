@@ -1,0 +1,16 @@
+{
+ "id": "dev.handle.app",
+ "name": "我的应用",
+ "version_name": "0.1.0",
+ "version": 1,
+ "data_version": 1,
+ "author": "",
+ "description": "一句话说明这个应用做什么。",
+ "permissions": [],
+ "requests": [],
+ "ui": [
+  { "id": "title", "type": "text", "x": 0, "y": 24, "w": 540, "h": 40, "size": 32, "align": "center", "gray": 160, "text": "你好，Spare" },
+  { "id": "big", "type": "text", "x": 0, "y": 70, "w": 540, "h": 90, "size": 80, "bold": true, "align": "center", "text": "0" },
+  { "id": "hint", "type": "text", "x": 0, "y": 160, "w": 540, "h": 30, "size": 22, "align": "center", "gray": 120, "text": "转表冠 +1 / -1，单击清零" }
+ ]
+}

@@ -3,7 +3,8 @@ Copyright (c) 2026 Technologie Spare inc. Licensed under the PolyForm Noncommerc
 License 1.0.0 (see LICENSE). Spare and Spare io are trademarks of Technologie
 Spare inc. (see TRADEMARKS.md).
 
-This repository contains only Spare's original launcher UI code. It does NOT
+This repository contains only Spare's original launcher UI code and the Spare
+Workshop developer documentation, templates and examples (workshop/). It does NOT
 contain any RayNeo firmware, RayNeo application code, images or fonts, and it
 does not contain the Spare io device runtime, phone link, firmware tooling or
 glasses apps, which are proprietary.

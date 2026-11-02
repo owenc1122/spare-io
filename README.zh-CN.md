@@ -44,6 +44,7 @@
 | 原创图标与字形（SVG 源文件） | `firmware/apps/frontend-v1/assets/` |
 | 电脑端 LVGL 预览渲染器 | `firmware/apps/frontend-v1/backend-lvgl/host/` |
 | 眼镜 App SDK 接口头文件 | `firmware/sdk/sg_sdk.h` |
+| Spare 创意工坊开发者套件：SpareScript 指南、应用格式、起步模板、示例应用 | `workshop/` |
 
 眼镜端运行时、手机连接、固件工具和各个功能 App 不在本仓库中。
 
@@ -91,6 +92,10 @@ make -C firmware/apps/frontend-v1 preview
 ## 接入自己的 Agent
 
 用你自己的 Agent（Codex CLI、Claude Code、OpenClaw、Ollama 或任何 OpenAI 兼容端点）做眼镜助手：[`agent-bridge/`](agent-bridge/) 是一个小型参考桥，协议见 [docs/agent/PROTOCOL.zh-CN.md](docs/agent/PROTOCOL.zh-CN.md)（Spare Agent 协议 v1）。
+
+## 给眼镜写应用
+
+用 SpareScript 写自己的眼镜应用，发布到 Spare 创意工坊。[`workshop/`](workshop/) 里有开发指南、应用包和线协议、起步模板，以及带手机控制面板（`controls`）的番茄钟示例。完整指南也在 <https://spare.cool/dev/docs>。
 
 ## 参与贡献
 

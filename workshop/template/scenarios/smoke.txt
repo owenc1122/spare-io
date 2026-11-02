@@ -1,0 +1,13 @@
+# 模拟器场景：每行一条。open / close / crown +1|-1 / click / tick <ms> / connect 0|1 / clock <分钟> /
+# reply k=v ... / shot <名字> / record <名字> <ms>。截图 1080×440（眼镜画面 2 倍）。
+open
+shot open
+crown +1
+crown +1
+shot crown
+click
+tick 400
+shot click
+close
+open
+shot reopen
